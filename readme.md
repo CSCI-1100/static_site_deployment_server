@@ -149,6 +149,9 @@ docker-compose up -d
 When students create their HTML files, they should reference assets like this:
 
 ```html
+<!-- Other pages (no folder prefix) -->
+<a href="about.html">About Me</a>
+
 <!-- CSS files -->
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/forms.css">
@@ -258,6 +261,6 @@ DATA_UPLOAD_MAX_MEMORY_SIZE=52428800  # 50MB
 
 For issues or questions:
 1. Check the troubleshooting section
-2. Review Django logs for error details
+2. Review `django.log` for error details
 3. Ensure all dependencies are installed
 4. Verify file permissions are correct
