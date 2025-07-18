@@ -1,0 +1,606 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Static Site Deployment{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .upload-section h3 {
+        color: #374151;
+        margin-bottom: 12px;
+        font-size: 18px;
+    }
+
+    .upload-zone {
+        border: 2px dashed #d1d5db;
+        border-radius: 6px;
+        padding: 40px 20px;
+        text-align: center;
+        background: #f9fafb;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    .upload-zone:hover {
+        border-color: #2563eb;
+        background: #eff6ff;
+    }
+
+    .upload-zone.dragover {
+        border-color: #2563eb;
+        background: #dbeafe;
+    }
+
+    .upload-icon {
+        font-size: 32px;
+        color: #9ca3af;
+        margin-bottom: 12px;
+    }
+
+    .upload-text {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .upload-hint {
+        color: #9ca3af;
+        font-size: 12px;
+    }
+
+    .file-list {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #e5e7eb;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 0;
+        color: #374151;
+        font-size: 14px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .file-item:last-child {
+        border-bottom: none;
+    }
+
+    .file-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .file-size {
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .file-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-small {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    .file-input {
+        position: absolute;
+        left: -9999px;
+        opacity: 0;
+        pointer-events: none;
+        width: 0.1px;
+        height: 0.1px;
+    }
+    
+    .upload-zone {
+        border: 2px dashed #d1d5db;
+        border-radius: 6px;
+        padding: 40px 20px;
+        text-align: center;
+        background: #f9fafb;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    
+    .upload-zone:hover {
+        border-color: #2563eb;
+        background: #eff6ff;
+    }
+    
+    .upload-zone.dragover {
+        border-color: #2563eb;
+        background: #dbeafe;
+    }
+    
+    .upload-zone:active {
+        transform: scale(0.98);
+    }    
+
+    .empty-state {
+        text-align: center;
+        color: #6b7280;
+        font-style: italic;
+        padding: 20px;
+    }
+
+    .code-comment {
+        display: block;
+        color: #6883b1;
+        font-style: italic;
+        line-height: 1.7rem;
+    }
+
+    @media (max-width: 768px) {
+        .grid-2-column {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    #textCopiedStatus {
+        position: absolute;
+        top: -30px; /* Adjust as needed to control where it appears above the button */
+        left: 50%;
+        transform: translateX(-50%); /* Center it horizontally over the button */
+        background-color: #4CAF50; /* Green background */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out; /* Smooth fade-in and fade-out effect */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<header class="card">
+    <h1 style="color: #2563eb; margin-bottom: 8px;">Deploy Static Site</h1>
+    <p style="color: #6b7280; font-size: 16px;">Upload your HTML, CSS, JavaScript, and assets to deploy your static website</p>
+    <div class="toggle-container tip">
+        <h2 class="toggle-heading tip-heading" title="Click to expand content">No website? Get started with a CLEAR prompt!</h2>
+        <div class="toggle-content">
+            <div class="clear-prompt-container">
+                <h3>CLEAR Prompt Structure:</h3>
+                "I need to create [SPECIFIC GOAL] for [AUDIENCE].
+                The output should include [LOGISTICS/CONSTRAINTS].
+                Here's an example of what I'm looking for: [EXAMPLE].
+                Please [SPECIFIC REQUIREMENTS AND REFINEMENTS]."
+            </div>
+            <div class="clear-prompt-container" onclick="copyClearText();" title="Click to copy example to clipboard">
+                <h3>Example:</h3>
+                <div>
+                    <span class="top-right-symbol">📋</span>
+                    <p id="clear-prompt-example">
+I need to create a starter portfolio website with proper folder structure for showcasing my work to potential employers and professors. The output should apply accessible design principles and include an index.html homepage, an about.html page, and all CSS/JS/image references must use the exact folder prefixes "css/", "js/", and "img/" since our deployment server requires this structure.
+<br><br>
+Here's an example of how to use the folder prefixes: &lt;link rel="stylesheet" href="css/style.css"&gt;, &lt;a href="about"&gt;About Me&lt;/a&gt;,&lt;img src="img/profile-photo.png" alt="My photo"&gt;.
+<br><br>
+Please make the design feel fresh and playful with a mint green and soft pastel color palette, include placeholder sections
+for my projects and skills, keep the layout clean but not boring, add some personality to the text (not too formal or corporate).
+</p>
+                    <div id="textCopiedStatus">Text copied to clipboard!</div>
+                </div>
+            </div>
+        </div>
+        <p>🔎&nbsp;<a target="_blank" href="https://csci-1100.github.io/class_resources_public/ai_and_machine_learning/clear_ai_prompting_tips.html">Click here</a> for more on CLEAR prompting!</p>
+    </div>
+</header>
+
+<!-- Upload Sections -->
+<div class="grid-2-column">
+    <!-- HTML Files -->
+    <div class="upload-section">
+        <h3>📄 HTML Files</h3>
+        <div class="upload-zone" data-type="html">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Drop HTML files here or click to browse</div>
+            <div class="upload-hint">index.html, about.html, contact.html...</div>
+        </div>
+        <input type="file" class="file-input" id="html-file-input" multiple accept=".html,.htm">
+        <div class="file-list">
+            {% for file in files_by_type.html %}
+            <div class="file-item">
+                <div class="file-info">
+                    <span>📄 {{ file.original_name }}</span>
+                    <span class="file-size">{{ file.size|filesizeformat }}</span>
+                </div>
+                <div class="file-actions">
+                    <form method="post" action="{% url 'delete_file' file.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Delete this file?')">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">No HTML files uploaded yet</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- CSS Files -->
+    <div class="upload-section">
+        <h3>🎨 CSS Files</h3>
+        <div class="upload-zone" data-type="css">
+            <div class="upload-icon">🎨</div>
+            <div class="upload-text">Drop CSS files here or click to browse</div>
+            <div class="upload-hint">styles.css, main.css, bootstrap.css...</div>
+        </div>
+        <input type="file" class="file-input" id="css-file-input" multiple accept=".css">
+        <div class="file-list">
+            {% for file in files_by_type.css %}
+            <div class="file-item">
+                <div class="file-info">
+                    <span>🎨 {{ file.original_name }}</span>
+                    <span class="file-size">{{ file.size|filesizeformat }}</span>
+                </div>
+                <div class="file-actions">
+                    <form method="post" action="{% url 'delete_file' file.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Delete this file?')">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">No CSS files uploaded yet</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <div class="upload-section">
+        <h3>⚡ JavaScript Files</h3>
+        <div class="upload-zone" data-type="js">
+            <div class="upload-icon">⚡</div>
+            <div class="upload-text">Drop JS files here or click to browse</div>
+            <div class="upload-hint">main.js, app.js, jquery.js...</div>
+        </div>
+        <input type="file" class="file-input" id="js-file-input" multiple accept=".js">
+        <div class="file-list">
+            {% for file in files_by_type.js %}
+            <div class="file-item">
+                <div class="file-info">
+                    <span>⚡ {{ file.original_name }}</span>
+                    <span class="file-size">{{ file.size|filesizeformat }}</span>
+                </div>
+                <div class="file-actions">
+                    <form method="post" action="{% url 'delete_file' file.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Delete this file?')">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">No JavaScript files uploaded yet</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Image Assets -->
+    <div class="upload-section">
+        <h3>🖼️ Images & Assets</h3>
+        <div class="upload-zone" data-type="image">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text">Drop images and assets here or click to browse</div>
+            <div class="upload-hint">PNG, JPG, GIF, SVG, fonts, etc.</div>
+        </div>
+        <input type="file" class="file-input" id="image-file-input" multiple accept="image/*,.svg,.woff,.woff2,.ttf,.otf,.pdf">
+        <div class="file-list">
+            {% for file in files_by_type.image %}
+            <div class="file-item">
+                <div class="file-info">
+                    <span>🖼️ {{ file.original_name }}</span>
+                    <span class="file-size">{{ file.size|filesizeformat }}</span>
+                </div>
+                <div class="file-actions">
+                    <form method="post" action="{% url 'delete_file' file.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Delete this file?')">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">No images uploaded yet</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Deployment Section -->
+<div class="card">
+    <h3>🚀 Deployment</h3>
+    <div style="display: flex; align-items: center; margin-bottom: 16px;">
+        <span class="status-indicator status-ready"></span>
+        <span>Deployed</span>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <div class="form-group">
+        <label>Your website is available at:</label>
+        <div class="url-display">{{ site_url }}</div>
+    </div>
+
+    <a href="{{ site_url }}" target="_blank" class="btn">View Website</a>
+    <a href="{% url 'export_files' %}" class="btn btn-secondary">Export ZIP</a>
+</div>
+
+<div class="grid-2-column">
+    <!-- Example Usage -->
+    <div class="card">
+        <h3>📖 File Structure Guide</h3>
+        <p style="margin-bottom: 16px;">To ensure your website works correctly, organize your files as follows:</p>
+        <div style="background: #f3f4f6; padding: 16px; border-radius: 6px; font-family: monospace; font-size: 14px;">
+            <div style="color: #059669;">✓ Correct file references in your HTML:</div>
+            <span class="code-comment">&lt;!-- Links to other pages have no folder prefix --&gt;</span>
+            &lt;a href="about.html"&gt;About Me&lt;/a&gt;<br>
+            <span class="code-comment">&lt;!-- External stylesheets go in the css folder --&gt;</span>
+            &lt;link rel="stylesheet" href="<strong>css/</strong>style.css"&gt;<br>
+            <span class="code-comment">&lt;!-- External scripts go in the js folder --&gt;</span>
+            &lt;script src="<strong>js/</strong>main.js"&gt;&lt;/script&gt;
+            <span class="code-comment">&lt;!-- Images go in the img folder --&gt;</span>
+            &lt;img src="<strong>img/</strong>logo.png" alt="Logo"&gt;
+        </div>
+    </div>
+    <!-- Settings Panel -->
+    <div class="card">
+        <h3>⚙️ Settings</h3>
+        <div class="form-group">
+            <label for="index-file">Index File</label>
+            <input type="text" id="index-file" value="index.html" readonly>
+            <small style="color: #6b7280;">This will be the default page served for your site</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+function copyClearText() {
+    let clearPrompt = document.getElementById('clear-prompt-example').textContent.trim();
+    navigator.clipboard.writeText(clearPrompt)
+    .then(() => {
+        // Optional: Provide user feedback
+        const copiedStatus = document.getElementById('textCopiedStatus');
+        copiedStatus.style.display = 'block';
+        copiedStatus.style.opacity = 1;
+        setTimeout(function() { 
+            copiedStatus.style.opacity = 0;
+            setTimeout(function() {
+                copiedStatus.style.display = 'none';
+            }, 300)
+        }, 1200);
+    })
+    .catch(err => {
+        // Handle potential errors (e.g., permission denied)
+        console.error("Failed to copy text: ", err);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get CSRF token
+    function getCSRFToken() {
+        const token = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (token) {
+            return token.value;
+        }
+        // Fallback: get from cookie
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') {
+                return value;
+            }
+        }
+        return '';
+    }
+
+    // Setup file upload for each section
+    const uploadSections = [
+        { type: 'html', inputId: 'html-file-input' },
+        { type: 'css', inputId: 'css-file-input' },
+        { type: 'js', inputId: 'js-file-input' },
+        { type: 'image', inputId: 'image-file-input' }
+    ];
+
+    uploadSections.forEach(section => {
+        const zone = document.querySelector(`.upload-zone[data-type="${section.type}"]`);
+        const fileInput = document.getElementById(section.inputId);
+        
+        if (!zone || !fileInput) {
+            console.error(`Upload zone or file input not found for type: ${section.type}`);
+            return;
+        }
+        
+        // Click to upload
+        zone.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log(`Triggering file input for type: ${section.type}`);
+            
+            // Reset the input value to allow selecting the same files again
+            fileInput.value = '';
+            
+            // Trigger the file input
+            fileInput.click();
+        });
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            zone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            zone.addEventListener(eventName, function() {
+                zone.classList.add('dragover');
+            }, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            zone.addEventListener(eventName, function() {
+                zone.classList.remove('dragover');
+            }, false);
+        });
+        
+        // Handle dropped files
+        zone.addEventListener('drop', function(e) {
+            console.log(`Files dropped on zone: ${section.type}`);
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            uploadFiles(files, section.type);
+        }, false);
+        
+        // Handle file input change
+        fileInput.addEventListener('change', function(e) {
+            console.log(`Files selected via input for type: ${section.type}`);
+            console.log(`Selected ${e.target.files.length} files`);
+            uploadFiles(e.target.files, section.type);
+        });
+        
+        // Debug: Test file input functionality
+        fileInput.addEventListener('click', function() {
+            console.log(`File input clicked for type: ${section.type}`);
+        });
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    function uploadFiles(files, fileType) {
+        if (files.length === 0) {
+            console.log('No files selected');
+            return;
+        }
+        
+        console.log(`Uploading ${files.length} files of type ${fileType}`);
+        
+        // Show upload progress
+        const progressFill = document.getElementById('progress-fill');
+        const statusText = document.querySelector('.status-indicator').nextElementSibling;
+        
+        if (progressFill) {
+            progressFill.style.width = '0%';
+        }
+        
+        if (statusText) {
+            statusText.textContent = 'Uploading files...';
+        }
+        
+        // Create form data
+        const formData = new FormData();
+        
+        // Add files to form data
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);
+            console.log(`Added file: ${files[i].name} (${files[i].size} bytes)`);
+        }
+        
+        formData.append('file_type', fileType);
+        
+        // Get CSRF token
+        const csrfToken = getCSRFToken();
+        console.log('CSRF token:', csrfToken ? 'found' : 'not found');
+        
+        // Upload files
+        fetch('{% url "upload_files" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => {
+            console.log('Upload response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Upload successful:', data);
+            
+            if (data.files && data.files.length > 0) {
+                // Simulate progress animation
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progressFill) {
+                        progressFill.style.width = Math.min(progress, 100) + '%';
+                    }
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            // Show success message
+                            if (statusText) {
+                                statusText.textContent = `Successfully uploaded ${data.files.length} file(s)`;
+                            }
+                            
+                            // Reload page to show new files
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        }, 500);
+                    }
+                }, 100);
+            } else {
+                throw new Error('No files were uploaded');
+            }
+        })
+        .catch(error => {
+            console.error('Upload error:', error);
+            
+            if (statusText) {
+                statusText.textContent = 'Upload failed - please try again';
+            }
+            
+            if (progressFill) {
+                progressFill.style.width = '0%';
+            }
+            
+            // Show error message
+            alert('Upload failed: ' + error.message + '\nPlease check the browser console for details.');
+        });
+    }
+    
+    // Debug: Check setup
+    console.log('Upload zones found:', document.querySelectorAll('.upload-zone').length);
+    console.log('File inputs found:', document.querySelectorAll('.file-input').length);
+});
+</script>
+{% endblock %}

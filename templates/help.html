@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Help - Static Site Deployment{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>📖 How to Use the Static Site Deployment Server</h1>
+    
+    <h2>Getting Started</h2>
+    <p>Welcome! This tool helps you deploy your static websites so you can see them running live. Here's how to use it:</p>
+    
+    <h3>1. 📁 Organize Your Files</h3>
+    <p>Before uploading, make sure your files are organized properly:</p>
+    <ul>
+        <li><strong>HTML files:</strong> index.html, about.html, contact.html, etc.</li>
+        <li><strong>CSS files:</strong> All your stylesheets (.css files)</li>
+        <li><strong>JavaScript files:</strong> All your scripts (.js files)</li>
+        <li><strong>Images & Assets:</strong> Photos, logos, fonts, etc.</li>
+    </ul>
+    
+    <h3>2. 📤 Upload Your Files</h3>
+    <p>Use the dashboard to upload your files. You can either:</p>
+    <ul>
+        <li>Drag and drop files into the appropriate sections</li>
+        <li>Click on a section to browse and select files</li>
+    </ul>
+    
+    <h3>3. ✅ Check Your File References</h3>
+    <p>Make sure your HTML files reference other files correctly:</p>
+    
+    <div style="background: #f3f4f6; padding: 16px; border-radius: 6px; font-family: monospace;">
+        &lt;!-- ✅ Correct way to reference files --&gt;<br>
+        &lt;link rel="stylesheet" href="css/style.css"&gt;<br>
+        &lt;script src="js/main.js"&gt;&lt;/script&gt;<br>
+        &lt;img src="img/photo.jpg" alt="My photo"&gt;<br><br>
+        
+        &lt;!-- ❌ Wrong - don't include your computer's path --&gt;<br>
+        &lt;link rel="stylesheet" href="C:/Users/yourname/Desktop/style.css"&gt;
+    </div>
+    
+    <h3>4. 🌐 View Your Website</h3>
+    <p>Click the "View Website" button to see your live site! Your URL is:</p>
+    <p><code>https://csciauto1.etsu.edu:5000/{{ user.username }}</code></p>
+    
+    <h3>5. 💾 Export Your Files</h3>
+    <p>Use the "Export ZIP" button to download all your files as a backup.</p>
+    
+    <h2>Common Issues</h2>
+    
+    <h3>🚫 My images aren't showing</h3>
+    <p>Check that:</p>
+    <ul>
+        <li>Your image files are uploaded to the Images & Assets section</li>
+        <li>Your HTML uses <code>src="img/filename.jpg"</code></li>
+        <li>The filename and extension match exactly (case-sensitive)</li>
+    </ul>
+    
+    <h3>🎨 My CSS isn't working</h3>
+    <p>Check that:</p>
+    <ul>
+        <li>Your CSS files are uploaded to the CSS Files section</li>
+        <li>Your HTML uses <code>href="css/style.css"</code></li>
+        <li>The CSS filename matches exactly</li>
+    </ul>
+    
+    <h3>⚡ My JavaScript isn't working</h3>
+    <p>Check that:</p>
+    <ul>
+        <li>Your JS files are uploaded to the JavaScript Files section</li>
+        <li>Your HTML uses <code>src="js/main.js"</code></li>
+        <li>The JavaScript filename matches exactly</li>
+    </ul>
+    
+    <h2>Need More Help?</h2>
+    <p>If you're still having trouble:</p>
+    <ul>
+        <li>Double-check your file references in HTML</li>
+        <li>Make sure all files are uploaded to the correct sections</li>
+        <li>Ask your instructor for assistance</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h2>📋 Quick Reference</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="background: #f3f4f6;">
+            <th style="padding: 12px; text-align: left; border: 1px solid #d1d5db;">File Type</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #d1d5db;">Upload Section</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #d1d5db;">HTML Reference</th>
+        </tr>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #d1d5db;">CSS Stylesheets</td>
+            <td style="padding: 12px; border: 1px solid #d1d5db;">🎨 CSS Files</td>
+            <td style="padding: 12px; border: 1px solid #d1d5db;"><code>href="css/style.css"</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #d1d5db;">JavaScript</td>
+            <td style="padding: 12px; border: 1px solid #d1d5db;">⚡ JavaScript Files</td>
+            <td style="padding: 12px; border: 1px solid #d1d5db;"><code>src="js/main.js"</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #d1d5db;">Images</td>
+            <td style="padding: 12px; border: 1px solid #d1d5db;">🖼️ Images & Assets</td>
+            <td style="padding: 12px; border: 1px solid #d1d5db;"><code>src="img/photo.jpg"</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #d1d5db;">Fonts</td>
+            <td style="padding: 12px; border: 1px solid #d1d5db;">🖼️ Images & Assets</td>
+            <td style="padding: 12px; border: 1px solid #d1d5db;"><code>url("img/font.woff")</code></td>
+        </tr>
+    </table>
+</div>
+
+<a href="{% url 'dashboard' %}" class="btn">← Back to Dashboard</a>
+{% endblock %}

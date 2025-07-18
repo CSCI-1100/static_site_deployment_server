@@ -1,0 +1,143 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:"Django site admin" }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        Static Site Deployment Admin
+    </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block userlinks %}
+    {% if has_permission %}
+        <div id="user-tools">
+            {% block welcome-msg %}
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        Welcome, 
+                        <strong>
+                            {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+                        </strong>.
+                    {% endif %}
+                {% endif %}
+            {% endblock %}
+            {% block userlinks_inner %}
+                {% if site_url %}
+                    <a href="{{ site_url }}">View site</a> /
+                {% endif %}
+                {% if has_permission %}
+                    {% url 'admin:password_change' as password_change_url %}
+                    {% if password_change_url %}
+                        <a href="{{ password_change_url }}">
+                        Change password
+                        </a> /
+                    {% endif %}
+                    <a href="{% url 'admin:logout' %}">Log out</a>
+                {% endif %}
+            {% endblock %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+/* Custom admin styling for Static Site Deployment */
+#header {
+    background: #2563eb;
+    color: #fff;
+}
+
+#header a:link, #header a:visited {
+    color: #fff;
+}
+
+#header a:focus, #header a:hover {
+    color: #e0f2fe;
+}
+
+#branding h1 {
+    color: #fff;
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+}
+
+#branding h1 a:link, #branding h1 a:visited {
+    color: #fff;
+    text-decoration: none;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: #2563eb;
+    color: #fff;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #2563eb;
+    border: none;
+    color: #fff;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover,
+.button:focus, input[type=submit]:focus, input[type=button]:focus, .submit-row input:focus, a.button:focus {
+    background: #1d4ed8;
+}
+
+.selector-chosen h2 {
+    background: #2563eb;
+}
+
+.calendar td.selected a {
+    background: #2563eb;
+}
+
+.timelist a {
+    color: #2563eb;
+}
+
+.module table .selected {
+    background: #e3f2fd;
+}
+
+a:link, a:visited {
+    color: #2563eb;
+}
+
+a:focus, a:hover {
+    color: #1d4ed8;
+}
+
+/* Bulk upload specific styling */
+.bulk-upload-info {
+    background: #e3f2fd;
+    border: 1px solid #2196f3;
+    border-radius: 4px;
+    padding: 16px;
+    margin: 16px 0;
+}
+
+.bulk-upload-info h3 {
+    color: #1976d2;
+    margin-top: 0;
+}
+
+.bulk-upload-example {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 13px;
+    margin: 8px 0;
+}
+{% block extra_css %}{% endblock %}
+</style>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

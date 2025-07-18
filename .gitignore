@@ -1,0 +1,12 @@
+django.log
+media/*
+*/migrations/*
+ssl/*
+staticfiles/*
+venv/*
+.venv/*
+.env*
+.vs*
+*.log
+*.sqlite3
+*pyc*

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Static Site Deployment{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 60px auto;">
+    <h2 style="text-align: center; margin-bottom: 24px; color: #2563eb;">Login to Deploy</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        
+        <button type="submit" class="btn" style="width: 100%;">Login</button>
+    </form>
+    
+    {% if form.errors %}
+    <div class="alert alert-error" style="margin-top: 16px;">
+        Invalid username or password.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
