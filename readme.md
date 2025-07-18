@@ -1,7 +1,8 @@
 # Static Site Deployment Server
 
 <div align="center">
-  <p><em>A Django-based web server designed for students to deploy static websites on a local network.</em>This provides a simple, educational deployment experience without the complexities of production hosting.</p>
+  <p><em>A Django-based web server designed for students to deploy static websites on a local network.</em></p>
+  <p>This provides a simple, educational deployment experience without the complexities of production hosting.</p>
 
   <img src="./media/dashboard.png" alt="Static Site Deployment Server dashboard" width="700"/>
 </div>
